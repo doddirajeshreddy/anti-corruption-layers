@@ -3,8 +3,11 @@ kind: Job
 metadata:
   name: {{ .Release.Name }}-postgres-init
   namespace: app
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/seed-configmap.yaml") . | sha256sum }}
 spec:
   backoffLimit: 1
+  ttlSecondsAfterFinished: 60
   template:
     spec:
       restartPolicy: Never
