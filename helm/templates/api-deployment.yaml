@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "api.fullname" . }}
+  labels:
+    app: {{ include "api.fullname" . }}
+spec:
+  replicas: {{ .Values.api.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "api.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "api.fullname" . }}
+      annotations:
+        config-checksum: {{ include (print $.Template.BasePath "/api-configmap.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: api
+          image: "{{ .Values.api.image.repository }}:{{ .Values.api.image.tag }}"
+          imagePullPolicy: {{ .Values.api.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.api.service.port }}
+          env:
+            - name: POSTGRES_HOST
+              value: {{ .Values.api.env.POSTGRES_HOST | quote }}
+            - name: POSTGRES_USER
+              value: {{ .Values.api.env.POSTGRES_USER | quote }}
+            - name: POSTGRES_PASSWORD
+              value: {{ .Values.api.env.POSTGRES_PASSWORD | quote }}
+            - name: POSTGRES_DB
+              value: {{ .Values.api.env.POSTGRES_DB | quote }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/config.yaml
+              subPath: config.yaml
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ .Release.Name }}-api-config

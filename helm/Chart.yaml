@@ -1,0 +1,6 @@
+apiVersion: v2
+name: anticorruption-layer
+description: A Helm chart for deploying the PostgreSQL database and the Python REST API.
+type: application
+version: 0.1.0
+appVersion: "1.0"

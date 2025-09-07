@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-postgres-init
+  namespace: app
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-seed
+          image: postgres:15-alpine
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "Seeding database...";
+              until pg_isready -h {{ .Values.api.env.POSTGRES_HOST }} -p 5432 -U {{ .Values.api.env.POSTGRES_USER }}; do
+                echo "Waiting for DB...";
+                sleep 2;
+              done;
+              psql -h {{ .Values.api.env.POSTGRES_HOST }} \
+                   -U {{ .Values.api.env.POSTGRES_USER }} \
+                   -d {{ .Values.api.env.POSTGRES_DB }} \
+                   -f /seed/seeder.sql
+          env:
+            - name: PGPASSWORD
+              value: {{ .Values.api.env.POSTGRES_PASSWORD }}
+          volumeMounts:
+            - name: seed-volume
+              mountPath: /seed
+              readOnly: true
+      volumes:
+        - name: seed-volume
+          configMap:
+            name: {{ .Release.Name }}-api-seed
+
