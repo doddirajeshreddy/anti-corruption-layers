@@ -5,39 +5,5 @@ metadata:
   namespace: app
 data:
   seeder.sql: |
-    CREATE TABLE IF NOT EXISTS users (
-      id SERIAL PRIMARY KEY,
-      username VARCHAR(255) NOT NULL,
-      email VARCHAR(255) NOT NULL UNIQUE,
-      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
+{{ .Files.Get "sql/seeder.sql" | indent 4 }}
 
-    INSERT INTO users (username, email)
-    VALUES ('rajesh', 'rajesh@gmail.com'),
-           ('revanth', 'revanth@gmail.com'),
-           ('harish', 'harish@gmail.com');
-    ON CONFLICT (email_address) DO NOTHING;
-
-
-    CREATE TABLE data_table (
-    id SERIAL PRIMARY KEY,
-    data_value TEXT NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-
-    INSERT INTO data_table (data_value) VALUES
-      ('Sample Data 1'),
-      ('Sample Data 2'),
-      ('Sample Data 3');
-
-    CREATE TABLE orders (
-      order_id SERIAL PRIMARY KEY,
-      customer_id INTEGER NOT NULL,
-      total NUMERIC(10,2) NOT NULL,
-      order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-
-    INSERT INTO orders (customer_id, total) VALUES
-      (1, 100.50),
-      (2, 200.00),
-      (3, 150.75);
