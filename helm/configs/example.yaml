@@ -1,0 +1,23 @@
+mappings:
+  - api_endpoint: /users
+    query: "SELECT id, username, email, created_at FROM users;"
+    columns:
+      id: user_id
+      username: name
+      email: email_address
+      created_at: registration_date
+
+  - api_endpoint: /data
+    query: "SELECT id, data_value, updated_at FROM data_table;"
+    columns:
+      id: data_id
+      data_value: value
+      updated_at: last_update
+
+  - api_endpoint: /orders
+    query: "SELECT order_id, customer_id, total, order_date FROM orders;"
+    columns:
+      order_id: id
+      customer_id: customer
+      total: amount
+      order_date: date
